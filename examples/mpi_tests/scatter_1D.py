@@ -31,3 +31,4 @@ if __name__ == "__main__":
     comm.Gatherv(processed_data, [gathered_data, counts, disps, MPI.DOUBLE])
     if rank == 0:
         print(f"Gathered data is {gathered_data}")
+
