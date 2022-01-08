@@ -4,7 +4,7 @@
 
 
 __all__ = [
-    "single_wave_polarization",
+    "whistler_polarization",
     "R_surface",
     "H_surface",
 ]
@@ -15,7 +15,7 @@ import astropy.units as u
 import numpy as np
 
 
-def single_wave_polarization(theta, B0, n, w):
+def whistler_polarization(theta, B0, n, w):
     r"""Solves cold plasma dispersion relation for the wave polarizations from
     background and wave parameters. Consult eqns (4-8) in Tao & Bortnik, 2010
     or Section 2.1 of the thesis in `docs/thesis/thesis.pdf` for the details.
@@ -39,17 +39,17 @@ def single_wave_polarization(theta, B0, n, w):
         x component of the refractive index vector N = (Nx, 0, Nz)
     Nz : unitless
         z component of the refractive index vector N = (Nx, 0, Nz)
-    ex : unitless
+    pex : unitless
         |Exw| / |Exw|
-    ey : unitless
+    pey : unitless
         |Eyw| / |Exw|
-    ez : unitless
+    pez : unitless
         |Ezw| / |Exw|
-    bx : unitless
+    pbx : unitless
         c |Bxw| / |Exw|
-    by : unitless
+    pby : unitless
         c |Byw| / |Exw|
-    bz : unitless
+    pbz : unitless
         c |Bzw| / |Exw|
     """
     # Calculate Stix coefficients
@@ -63,13 +63,13 @@ def single_wave_polarization(theta, B0, n, w):
     Nx = N * np.sin(theta)
     Nz = N * np.cos(theta)
     # Calculate polarizations (relative component is Ex)
-    ex = np.float64(1.0)
-    ey = D / (N ** 2 - S)
-    ez = Nx * Nz / (Nx ** 2 - P)
-    bx = Nz * D / (N ** 2 - S)
-    by = Nz * P / (P - Nx ** 2)
-    bz = Nx * D / (S - N ** 2)
-    return (Nx, Nz, ex, ey, ez, bx, by, bz)
+    pex = np.float64(1.0)
+    pey = D / (N ** 2 - S)
+    pez = Nx * Nz / (Nx ** 2 - P)
+    pbx = Nz * D / (N ** 2 - S)
+    pby = Nz * P / (P - Nx ** 2)
+    pbz = Nx * D / (S - N ** 2)
+    return (Nx, Nz, pex, pey, pez, pbx, pby, pbz)
 
 
 def R_surface(n, Nz, w):

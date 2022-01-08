@@ -63,7 +63,7 @@ def EM_model(t, x, y, z, ux, uy, uz):
 # Print some information of the script
 print(f"""
 ------------------------------------------------------------------
-    Simulation of particle dynamics in finite electric field.
+    Simulation of particle dynamics in uniform magnetic field.
 ------------------------------------------------------------------
  * dtwce                                    : {dt:.4f}
  * Number of time steps                     : {Nt}

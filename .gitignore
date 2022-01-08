@@ -4,9 +4,12 @@ __pycache__/
 *$py.class
 
 # Ignore data directories
+plot_frames/
 particles/
 logs/
 *.png
+*.mp4
+*.gif
 
 # C extensions
 *.so
