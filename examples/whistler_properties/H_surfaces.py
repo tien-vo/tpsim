@@ -47,4 +47,5 @@ for (j, ax) in enumerate(axes):
     ax.axvline(0, color="k")
     ax.axhline(0, color="k")
 
-fig.savefig(f"compare_nz.png", dpi=fig.dpi)
+fig.savefig(f"H_surfaces.png", dpi=fig.dpi)
+
