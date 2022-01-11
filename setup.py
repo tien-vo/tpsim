@@ -19,6 +19,7 @@ setup(
         "numpy",
         "numba",
         "scipy",
+        "mpl_extras @ https://github.com/tien-vo/mpl_extras/archive/main.zip"
     ],
     extras_require={
         "dev": ["pytest", "tox"],
