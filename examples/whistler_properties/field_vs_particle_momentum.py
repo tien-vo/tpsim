@@ -7,7 +7,7 @@ import numpy as np
 
 
 def A(theta, B0=10, n=5, w_wce=0.15):
-    wce = tp.cyclotron_frequency(B0)
+    wce = tp.cyclotron_frequency(B0, particle="e-")
     E0 = tp.normalize_E(20, B0)
     V_max = tp.KE2S(1000)
 
