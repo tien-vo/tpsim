@@ -11,8 +11,6 @@ import numpy as np
 import pytest
 
 
-#all tests passed
-
 @pytest.mark.parametrize("B", [1, 10, 500, 1000])
 @pytest.mark.parametrize("ptcl", ["p", "e-"])
 def test_cyclotron_freq(B, ptcl):
