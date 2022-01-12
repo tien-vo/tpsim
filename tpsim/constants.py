@@ -7,9 +7,12 @@ __all__ = [
     "c",
     "e",
     "eps0",
+    "m",
     "mc2",
     "m_e",
     "m_i",
+    "q",
+    "s"
 ]
 
 
@@ -32,3 +35,8 @@ c = c.c.to(u.Unit("km s-1")).value
 
 # Electron rest mass [eV]
 mc2 = m_e * (c * 1e3) ** 2 / e
+
+# Create dictionary for mass, charge, and charge sign
+m = {"e-": m_e, "p": m_i}
+q = {"e-": -e, "p": e}
+s = {"e-": -1, "p": 1}

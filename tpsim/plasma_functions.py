@@ -10,20 +10,20 @@ __all__ = [
 ]
 
 
-from .constants import e, m_e, m_i, eps0
+from .constants import q, m, s, eps0
 import numpy as np
 
 
-def cyclotron_frequency(B, m=m_e):
+def cyclotron_frequency(B, particle="e-"):
     """Calculate the unsigned cyclotron frequency in SI units.
 
     ----------
     Parameters
     ----------
-    B : nT
+    B           : nT
         Background magnetic field
-    m : kg
-        Particle mass (default: electron mass)
+    particle    : str
+        "e-" for electron or "p" for ion
 
     -------
     Returns
@@ -31,20 +31,20 @@ def cyclotron_frequency(B, m=m_e):
     wc : rad/s
         Cyclotron frequency
     """
-    wc = e * B * 1e-9 / m
+    wc = abs(q[particle]) * B * 1e-9 / m[particle]
     return wc
 
 
-def plasma_frequency(n, m=m_e):
+def plasma_frequency(n, particle="e-"):
     """"Calculate the plasma frequency in SI units.
 
     ----------
     Parameters
     ----------
-    n : cm-3
+    n           : cm-3
         Number density of particles
-    m : kg
-        Particle mass (default: electron mass)
+    particle    : str
+        "e" for electron or "i" for ion
 
     -------
     Returns
@@ -52,7 +52,7 @@ def plasma_frequency(n, m=m_e):
     wp : rad/s
         Plasma frequency
     """
-    wp = np.sqrt((n * 100 ** 3 * e ** 2) / (eps0 * m))
+    wp = np.sqrt((n * 100 ** 3 * q[particle] ** 2) / (eps0 * m[particle]))
     return wp
 
 
@@ -76,12 +76,11 @@ def calculate_SDP(B, n, w):
         Stix coefficients
     """
     S, D, P = 1, 0, 1
-    for i, m in enumerate([m_e, m_i]):
-        s = -1 if i == 0 else  1    #sign for electron and ion charge
-        wc = cyclotron_frequency(B, m)
-        wp = plasma_frequency(n, m)
+    for ptcl in ["e-", "p"]:
+        wc = cyclotron_frequency(B, particle=ptcl)
+        wp = plasma_frequency(n, particle=ptcl)
         S += - (wp ** 2) / (w ** 2 - wc ** 2)
-        D += s * (wc * wp**2) / (w * (w ** 2 - wc ** 2))
+        D += s[ptcl] * (wc * wp ** 2) / (w * (w ** 2 - wc ** 2))
         P += - (wp ** 2) / (w ** 2)
 
     return (S, D, P)
