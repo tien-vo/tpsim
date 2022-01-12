@@ -30,25 +30,16 @@ eps = 1e-3
 E0 = eps * tp.c * B0 * 1e-3
 # Number density [1/cc]
 n = 5
-ptcl = "p"
-# Cyclotron frequency
-wce = tp.cyclotron_frequency(B0, particle=ptcl)
-# Plasma frequency
-wpe = tp.plasma_frequency(n, particle=ptcl)
 
 ## ---------- Particle parameters
-kinetic_energy = np.array([10, 50])
-gyrophase = np.array([0, 0])
-pitch_angle = np.array([45, 90])
-Np = len(kinetic_energy)
+KE = np.array([10, 50])
+GP = np.array([0, 0])
+PA = np.array([45, 90])
+Np = len(KE)
 # Normalized position
 xn, yn, zn = np.zeros((3, Np))
 # Normalized velocity
-uxn, uyn, uzn = tp.ES2US(
-    kinetic_energy,
-    np.radians(gyrophase),
-    np.radians(pitch_angle)
-) / tp.c
+uxn, uyn, uzn = tp.ES2US(KE, np.radians(GP), np.radians(PA)) / tp.c
 
 ## ---------- Electromagnetic field model
 ## Define the electromagnetic field here (background + perturbations)
@@ -64,30 +55,10 @@ def EM_model(t, x, y, z, ux, uy, uz):
     Bz = np.ones(Np)
     return Ex, Ey, Ez, Bx, By, Bz
 
-# Print some information of the script
-print(f"""
-------------------------------------------------------------------
-    Simulation of particle dynamics in finite electric field.
-------------------------------------------------------------------
- * dtwce                                    : {dt:.4f}
- * Number of time steps                     : {Nt}
-----------
- * Number of particles                      : {Np}
-----------
- * Background electric field                : {E0:.4f} mV/m
- * Background magnetic field                : {B0} nT
- * Background electron density              : {n} /cc
- * Electron plasma frequency                : {wpe:.4f} rad/s
- * Electron cyclotron frequency             : {wce:.4f} rad/s
- * wpe / wce                                : {wpe / wce:.4f}
-------------------------------------------------------------------
-""")
-
-
 # --------------------------------------------------------------------------- #
 #                              Post-processing
 # --------------------------------------------------------------------------- #
-def check_solution(X, Y, Z, UX, UY, UZ, tol=1e-3):
+def check_solution(X, Y, Z, UX, UY, UZ, particle, tol=1e-3):
     r"""
     The analytical solution is given by
         x(t) = x_0 + v_\bot \sin(t+\delta)
@@ -95,7 +66,7 @@ def check_solution(X, Y, Z, UX, UY, UZ, tol=1e-3):
         v_x(t) = v_\bot\cos(t + \delta)
         v_y(t) = -s v_\bot\sin(t + \delta) - |ExB|  (|B|=1)
     """
-    s = tp.s[ptcl]
+    s = tp.s[particle]
 
     T = np.arange(Nt) * dt
     vperp = np.sqrt(uxn ** 2 + uyn ** 2)
@@ -115,12 +86,12 @@ def check_solution(X, Y, Z, UX, UY, UZ, tol=1e-3):
         UZS[i, :] = uzn[i]
 
     # Check
-    #assert np.isclose(X, XS, rtol=tol, atol=tol).all()
-    #assert np.isclose(Y, YS, rtol=tol, atol=tol).all()
-    #assert np.isclose(Z, ZS, rtol=tol, atol=tol).all()
-    #assert np.isclose(UX, UXS, rtol=tol, atol=tol).all()
-    #assert np.isclose(UY, UYS, rtol=tol, atol=tol).all()
-    #assert np.isclose(UZ, UZS, rtol=tol, atol=tol).all()
+    assert np.isclose(X, XS, rtol=tol, atol=tol).all()
+    assert np.isclose(Y, YS, rtol=tol, atol=tol).all()
+    assert np.isclose(Z, ZS, rtol=tol, atol=tol).all()
+    assert np.isclose(UX, UXS, rtol=tol, atol=tol).all()
+    assert np.isclose(UY, UYS, rtol=tol, atol=tol).all()
+    assert np.isclose(UZ, UZS, rtol=tol, atol=tol).all()
 
     me.setup_mpl(tex=True)
     # Loop through particles
@@ -129,7 +100,7 @@ def check_solution(X, Y, Z, UX, UY, UZ, tol=1e-3):
         fig, axes = plt.subplots(3, 2, figsize=(12, 6), sharex=True)
         fig.subplots_adjust(wspace=0.3)
         fig.suptitle(
-            f"KE0 = {kinetic_energy[i]} eV; P0 = {pitch_angle[i]}$^\circ$"
+            f"Particle = {particle}; KE0 = {KE[i]} eV; P0 = {PA[i]}$^\circ$"
         )
 
         # Plot solved solutions
@@ -160,7 +131,8 @@ def check_solution(X, Y, Z, UX, UY, UZ, tol=1e-3):
             if n == 2:
                 ax.set_xlabel("$t\\Omega_{c}$")
 
-        fig.savefig(f"particle_{i}.png")
+        string = "electron" if particle == "e-" else "ion"
+        fig.savefig(f"{string}_trajectories_{i}.png")
         plt.close(fig)
 
 
@@ -169,37 +141,37 @@ def check_solution(X, Y, Z, UX, UY, UZ, tol=1e-3):
 # --------------------------------------------------------------------------- #
 if __name__ == "__main__":
 
-    # Initial conditions
-    t, x, y, z, ux, uy, uz = t_start, xn, yn, zn, uxn, uyn, uzn
-    # History arrays
-    X, Y, Z, UX, UY, UZ = np.zeros((6, Np, Nt))
-    X[:, 0] = x
-    Y[:, 0] = y
-    Z[:, 0] = z
-    UX[:, 0] = ux
-    UY[:, 0] = uy
-    UZ[:, 0] = uz
+    for ptcl in ["e-", "p"]:
+        # Initial conditions
+        t, x, y, z, ux, uy, uz = t_start, xn, yn, zn, uxn, uyn, uzn
+        # History arrays
+        X, Y, Z, UX, UY, UZ = np.zeros((6, Np, Nt))
+        X[:, 0] = x
+        Y[:, 0] = y
+        Z[:, 0] = z
+        UX[:, 0] = ux
+        UY[:, 0] = uy
+        UZ[:, 0] = uz
+        # Main loop
+        print(f"Starting main loop for {ptcl}")
+        advance = tp.advance
+        for n in range(1, Nt):
+            # Advance particles
+            t, x, y, z, ux, uy, uz = advance(
+                t, x, y, z, ux, uy, uz, EM_model, dt, particle=ptcl
+            )
+            # Save to history arrays
+            X[:, n] = x
+            Y[:, n] = y
+            Z[:, n] = z
+            UX[:, n] = ux
+            UY[:, n] = uy
+            UZ[:, n] = uz
+            # Log
+            if n % log_interval == 0: print(f"Pushed {n} steps")
 
-    # Main loop
-    print(f"Starting main loop")
-    advance = tp.advance
-    for n in range(1, Nt):
-        # Advance particles
-        t, x, y, z, ux, uy, uz = advance(t, x, y, z, ux, uy, uz, EM_model, dt)
+        print(f"Done!")
 
-        # Save to history arrays
-        X[:, n] = x
-        Y[:, n] = y
-        Z[:, n] = z
-        UX[:, n] = ux
-        UY[:, n] = uy
-        UZ[:, n] = uz
-
-        # Log
-        if n % log_interval == 0: print(f"Pushed {n} steps")
-
-    print(f"Done!")
-
-    # Post-processing
-    check_solution(X, Y, Z, UX, UY, UZ)
+        # Post-processing
+        check_solution(X, Y, Z, UX, UY, UZ, ptcl)
 
