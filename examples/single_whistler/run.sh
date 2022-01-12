@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Run simulation
-#mpirun python run.py
+mpirun python run.py
 
 # Plot
 python plot.py

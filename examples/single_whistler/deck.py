@@ -25,9 +25,9 @@ B0 = 60
 # Number density [1/cc]
 n = 350
 # Electron cyclotron frequency
-wce = tp.cyclotron_frequency(B0)
+wce = tp.cyclotron_frequency(B0, particle="e-")
 # Electron plasma frequency
-wpe = tp.plasma_frequency(n)
+wpe = tp.plasma_frequency(n, particle="e-")
 
 ## ---------- Wave parameters
 # w/wce

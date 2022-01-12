@@ -52,7 +52,9 @@ if __name__ == "__main__":
     for n in range(1, Nt + 1):
 
         # Advance particles
-        t, x, y, z, ux, uy, uz = advance(t, x, y, z, ux, uy, uz, EM_model, dt)
+        t, x, y, z, ux, uy, uz = advance(
+            t, x, y, z, ux, uy, uz, EM_model, dt, particle="e-"
+        )
 
         # At save intervals ...
         if n % save_interval == 0:
