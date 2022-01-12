@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-from .constants import m_e, e, c, mc2
+from .constants import c, mc2
 import astropy.units as u
 import numpy as np
 
