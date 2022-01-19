@@ -10,7 +10,7 @@ __all__ = [
 ]
 
 
-from .constants import q, m, s, eps0
+from .constants import q, m, s, eps0, c
 import numpy as np
 
 
@@ -54,6 +54,26 @@ def plasma_frequency(n, particle="e-"):
     """
     wp = np.sqrt((n * 100 ** 3 * q[particle] ** 2) / (eps0 * m[particle]))
     return wp
+
+
+def inertial_length(n, particle="e-"):
+    """"Calculate the inertial length in SI units.
+
+    ----------
+    Parameters
+    ----------
+    n           : cm-3
+        Number density of particles
+    particle    : str
+        "e" for electron or "i" for ion
+
+    -------
+    Returns
+    -------
+    d : rad/s
+        Inertial length
+    """
+    return c / plasma_frequency(n, particle)
 
 
 def calculate_SDP(B, n, w):
