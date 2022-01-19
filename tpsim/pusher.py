@@ -11,7 +11,7 @@ __all__ = [
 import numpy as np
 
 
-def advance(t, x, y, z, ux, uy, uz, model, dt, particle="e-"):
+def advance(t, x, y, z, ux, uy, uz, model, dt, s="e-"):
     r"""Advance the particles in time through a step size dt with the given
     electromagnetic field model using the Boris algorithm. See more details in
     Ripperda et al., 2018, or Section 3.1 in the thesis.
@@ -48,22 +48,19 @@ def advance(t, x, y, z, ux, uy, uz, model, dt, particle="e-"):
         New electron state in natural units (same as input parameters)
     """
     # Charge sign
-    if particle == "e-":
-        s = -1
-    else:
-        s = 1
+    qq = -1 if s == "e-" else 1
     # Electromagnetic field
     Ex, Ey, Ez, Bx, By, Bz = model(t, x, y, z, ux, uy, uz)
     # u_minus
-    uxm = ux + s * dt * Ex / 2
-    uym = uy + s * dt * Ey / 2
-    uzm = uz + s * dt * Ez / 2
+    uxm = ux + qq * dt * Ex / 2
+    uym = uy + qq * dt * Ey / 2
+    uzm = uz + qq * dt * Ez / 2
     # Lorentz factor
     g = np.sqrt(1 + (uxm ** 2 + uym ** 2 + uzm ** 2))
     # Auxiliary vectors
-    Tx = s * Bx * dt / 2 / g
-    Ty = s * By * dt / 2 / g
-    Tz = s * Bz * dt / 2 / g
+    Tx = qq * Bx * dt / 2 / g
+    Ty = qq * By * dt / 2 / g
+    Tz = qq * Bz * dt / 2 / g
     T2 = Tx ** 2 + Ty ** 2 + Tz ** 2
     Sx = 2 * Tx / (1 + T2)
     Sy = 2 * Ty / (1 + T2)
@@ -97,9 +94,9 @@ def advance(t, x, y, z, ux, uy, uz, model, dt, particle="e-"):
         - Sy * Ty * uzm
     )
     # New relativistic velocity
-    ux_new = uxp + s * dt * Ex / 2
-    uy_new = uyp + s * dt * Ey / 2
-    uz_new = uzp + s * dt * Ez / 2
+    ux_new = uxp + qq * dt * Ex / 2
+    uy_new = uyp + qq * dt * Ey / 2
+    uz_new = uzp + qq * dt * Ez / 2
     g_new = np.sqrt(1 + ux_new ** 2 + uy_new ** 2 + uz_new ** 2)
     # New position
     x_new = x + dt * ux_new / g_new

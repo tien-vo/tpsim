@@ -19,7 +19,7 @@ def test_pusher_calculations():
     """Check a case by hand"""
 
     state = np.array([0, 0, 0, 0.2, 0, 0.03])
-    _, x, y, z, ux, uy, uz = advance(0, *state.T, model, 1e-5, particle="e-")
+    _, x, y, z, ux, uy, uz = advance(0, *state.T, model, 1e-5, s="e-")
     assert np.isclose(x, 1.96024e-6)
     assert np.isclose(y, 1.92138e-11)
     assert np.isclose(z, 2.94048e-7)
