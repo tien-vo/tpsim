@@ -58,31 +58,31 @@ def EM_model(t, x, y, z, ux, uy, uz):
 # --------------------------------------------------------------------------- #
 #                              Post-processing
 # --------------------------------------------------------------------------- #
-def check_solution(X, Y, Z, UX, UY, UZ, particle, tol=1e-3):
+def check_solution(X, Y, Z, UX, UY, UZ, s, tol=1e-3):
     r"""
     The analytical solution is given by
         x(t) = x_0 + v_\bot \sin(t+\delta)
-        y(t) = y_0 + s v_\bot \cos(t+\delta) - |ExB| t
+        y(t) = y_0 + qq v_\bot \cos(t+\delta) - |ExB| t
         v_x(t) = v_\bot\cos(t + \delta)
-        v_y(t) = -s v_\bot\sin(t + \delta) - |ExB|  (|B|=1)
+        v_y(t) = -qq v_\bot\sin(t + \delta) - |ExB|  (|B|=1)
     """
-    s = tp.s[particle]
+    qq = tp.qq[s]
 
     T = np.arange(Nt) * dt
     vperp = np.sqrt(uxn ** 2 + uyn ** 2)
-    delta = np.arctan2(-s * (uyn + eps), uxn)
+    delta = np.arctan2(-qq * (uyn + eps), uxn)
     # Solve for IC
     x0 = xn - vperp * np.sin(delta)
-    y0 = yn - s * vperp * np.cos(delta)
+    y0 = yn - qq * vperp * np.cos(delta)
     # Create solution arrays
     XS, YS, ZS, UXS, UYS, UZS = np.zeros((6, Np, Nt))
     # Loop through particles
     for i in range(X.shape[0]):
         XS[i, :] = x0[i] + vperp[i] * np.sin(T + delta[i])
-        YS[i, :] = y0[i] + s * vperp[i] * np.cos(T + delta[i]) - eps * T
+        YS[i, :] = y0[i] + qq * vperp[i] * np.cos(T + delta[i]) - eps * T
         ZS[i, :] = zn[i] + uzn[i] * T
         UXS[i, :] = vperp[i] * np.cos(T + delta[i])
-        UYS[i, :] = -s * vperp[i] * np.sin(T + delta[i]) - eps
+        UYS[i, :] = -qq * vperp[i] * np.sin(T + delta[i]) - eps
         UZS[i, :] = uzn[i]
 
     # Check
@@ -100,7 +100,7 @@ def check_solution(X, Y, Z, UX, UY, UZ, particle, tol=1e-3):
         fig, axes = plt.subplots(3, 2, figsize=(12, 6), sharex=True)
         fig.subplots_adjust(wspace=0.3)
         fig.suptitle(
-            f"Particle = {particle}; KE0 = {KE[i]} eV; P0 = {PA[i]}$^\circ$"
+            f"Particle = {s}; KE0 = {KE[i]} eV; P0 = {PA[i]}$^\circ$"
         )
 
         # Plot solved solutions
@@ -131,7 +131,7 @@ def check_solution(X, Y, Z, UX, UY, UZ, particle, tol=1e-3):
             if n == 2:
                 ax.set_xlabel("$t\\Omega_{c}$")
 
-        string = "electron" if particle == "e-" else "ion"
+        string = "electron" if s == "e-" else "ion"
         fig.savefig(f"{string}_trajectories_{i}.png")
         plt.close(fig)
 
@@ -141,7 +141,7 @@ def check_solution(X, Y, Z, UX, UY, UZ, particle, tol=1e-3):
 # --------------------------------------------------------------------------- #
 if __name__ == "__main__":
 
-    for ptcl in ["e-", "p"]:
+    for s in ["e-", "i"]:
         # Initial conditions
         t, x, y, z, ux, uy, uz = t_start, xn, yn, zn, uxn, uyn, uzn
         # History arrays
@@ -153,12 +153,12 @@ if __name__ == "__main__":
         UY[:, 0] = uy
         UZ[:, 0] = uz
         # Main loop
-        print(f"Starting main loop for {ptcl}")
+        print(f"Starting main loop for {s}")
         advance = tp.advance
         for n in range(1, Nt):
             # Advance particles
             t, x, y, z, ux, uy, uz = advance(
-                t, x, y, z, ux, uy, uz, EM_model, dt, particle=ptcl
+                t, x, y, z, ux, uy, uz, EM_model, dt, s=s
             )
             # Save to history arrays
             X[:, n] = x
@@ -173,5 +173,5 @@ if __name__ == "__main__":
         print(f"Done!")
 
         # Post-processing
-        check_solution(X, Y, Z, UX, UY, UZ, ptcl)
+        check_solution(X, Y, Z, UX, UY, UZ, s)
 
