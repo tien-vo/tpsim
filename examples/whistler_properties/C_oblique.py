@@ -10,8 +10,8 @@ def calculate_C(E0, B0, n, w_wce=0.15, theta=65):
 
     theta = np.radians(theta)
     smax = tp.KE2S(3000) / tp.c
-    wce = tp.cyclotron_frequency(B0, particle="e-")
-    wpe = tp.plasma_frequency(n, particle="e-")
+    wce = tp.wcs(B0, "e-")
+    wpe = tp.wps(n, "e-")
 
     E0n = tp.normalize_E(E0, B0)
     Nx, Nz, pex, pey, pez, pbx, pby, pbz = tp.whistler_polarization(

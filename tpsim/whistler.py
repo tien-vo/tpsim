@@ -53,7 +53,7 @@ def whistler_polarization(theta, B0, n, w):
         c |Bzw| / |Exw|
     """
     # Calculate Stix coefficients
-    S, D, P = calculate_SDP(B=B0, n=n, w=w)
+    S, D, P = SDP(B=B0, n=n, w=w)
     # Auxilliary constants
     A = S * np.sin(theta) ** 2 + P * np.cos(theta) ** 2
     B = S * P + S * A - D ** 2 * np.sin(theta) ** 2
