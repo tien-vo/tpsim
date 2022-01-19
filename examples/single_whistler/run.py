@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
         # Advance particles
         t, x, y, z, ux, uy, uz = advance(
-            t, x, y, z, ux, uy, uz, EM_model, dt, particle="e-"
+            t, x, y, z, ux, uy, uz, EM_model, dt, s="e-"
         )
 
         # At save intervals ...
