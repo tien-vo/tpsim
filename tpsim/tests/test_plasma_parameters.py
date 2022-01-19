@@ -1,5 +1,5 @@
 from ..constants import m
-from ..plasma_functions import (
+from ..plasma_parameters import (
     cyclotron_frequency,
     plasma_frequency,
     calculate_SDP,

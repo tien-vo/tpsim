@@ -6,7 +6,7 @@
 """
 
 
-from .plasma_functions import *
+from .plasma_parameters import *
 from .hdf5_helpers import *
 from .distribution import *
 from .conversions import *
