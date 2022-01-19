@@ -4,38 +4,38 @@
 
 
 __all__ = [
-    "calculate_SDP",
-    "cyclotron_frequency",
-    "plasma_frequency",
+    "SDP",
+    "ds",
+    "wcs",
+    "wps",
 ]
 
 
-from .constants import q, m, s, eps0, c
+from .constants import q, m, qq, eps0, c
 import numpy as np
 
 
-def cyclotron_frequency(B, particle="e-"):
+def wcs(B, s="e-"):
     """Calculate the unsigned cyclotron frequency in SI units.
 
     ----------
     Parameters
     ----------
-    B           : nT
+    B : nT
         Background magnetic field
-    particle    : str
-        "e-" for electron or "i" for ion
+    s : str
+        "e-" for electron or "i" for ion (default: "e-")
 
     -------
     Returns
     -------
-    wc : rad/s
+    wcs : rad/s
         Cyclotron frequency
     """
-    wc = abs(q[particle]) * B * 1e-9 / m[particle]
-    return wc
+    return abs(q[s]) * B * 1e-9 / m[s]
 
 
-def plasma_frequency(n, particle="e-"):
+def wps(n, s="e-"):
     """"Calculate the plasma frequency in SI units.
 
     ----------
@@ -43,20 +43,19 @@ def plasma_frequency(n, particle="e-"):
     ----------
     n           : cm-3
         Number density of particles
-    particle    : str
+    s    : str
         "e" for electron or "i" for ion
 
     -------
     Returns
     -------
-    wp : rad/s
+    wps : rad/s
         Plasma frequency
     """
-    wp = np.sqrt((n * 100 ** 3 * q[particle] ** 2) / (eps0 * m[particle]))
-    return wp
+    return np.sqrt((n * 100 ** 3 * q[s] ** 2) / (eps0 * m[s]))
 
 
-def inertial_length(n, particle="e-"):
+def ds(n, s="e-"):
     """"Calculate the inertial length in SI units.
 
     ----------
@@ -64,19 +63,19 @@ def inertial_length(n, particle="e-"):
     ----------
     n           : cm-3
         Number density of particles
-    particle    : str
+    s    : str
         "e" for electron or "i" for ion
 
     -------
     Returns
     -------
-    d : rad/s
+    ds : rad/s
         Inertial length
     """
-    return c / plasma_frequency(n, particle)
+    return c / wps(n, s)
 
 
-def calculate_SDP(B, n, w):
+def SDP(B, n, w):
     """Calculate the Stix parameters.
 
     ----------
@@ -96,12 +95,12 @@ def calculate_SDP(B, n, w):
         Stix coefficients
     """
     S, D, P = 1, 0, 1
-    for ptcl in ["e-", "i"]:
-        wc = cyclotron_frequency(B, particle=ptcl)
-        wp = plasma_frequency(n, particle=ptcl)
-        S += - (wp ** 2) / (w ** 2 - wc ** 2)
-        D += s[ptcl] * (wc * wp ** 2) / (w * (w ** 2 - wc ** 2))
-        P += - (wp ** 2) / (w ** 2)
+    for s in ["e-", "i"]:
+        wc_ = wcs(B, s=s)
+        wp_ = wps(n, s=s)
+        S += - (wp_ ** 2) / (w ** 2 - wc_ ** 2)
+        D += qq[s] * (wc_ * wp_ ** 2) / (w * (w ** 2 - wc_ ** 2))
+        P += - (wp_ ** 2) / (w ** 2)
 
     return (S, D, P)
 

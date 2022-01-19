@@ -1,30 +1,27 @@
 from ..constants import m
-from ..plasma_parameters import (
-    cyclotron_frequency,
-    plasma_frequency,
-    calculate_SDP,
-)
-from plasmapy.formulary.dielectric import cold_plasma_permittivity_SDP as SDP
+from ..plasma_parameters import (wps, wcs, SDP)
+from plasmapy.formulary.dielectric import cold_plasma_permittivity_SDP as SDP_
 from plasmapy.formulary import wc_, wp_
 import astropy.units as u
 import numpy as np
 import pytest
+import warnings
 
 
 @pytest.mark.parametrize("B", [1, 10, 500, 1000])
-@pytest.mark.parametrize("ptcl", ["i", "e-"])
-def test_cyclotron_freq(B, ptcl):
-    ii = "p" if ptcl == "i" else "e-"
-    wc = cyclotron_frequency(B, particle=ptcl)
+@pytest.mark.parametrize("s", ["i", "e-"])
+def test_cyclotron_freq(B, s):
+    ii = "p" if s == "i" else "e-"
+    wc = wcs(B, s)
     wc_official = wc_(B * u.nT, particle=ii)
     assert np.isclose(wc, wc_official.value)
 
 
 @pytest.mark.parametrize("n", [5, 50, 500])
-@pytest.mark.parametrize("ptcl", ["i", "e-"])
-def test_plasma_freq(n, ptcl):
-    ii = "p" if ptcl == "i" else "e-"
-    wp = plasma_frequency(n, particle=ptcl)
+@pytest.mark.parametrize("s", ["i", "e-"])
+def test_plasma_freq(n, s):
+    ii = "p" if s == "i" else "e-"
+    wp = wps(n, s)
     wp_official = wp_(n/u.Unit("cm3"), particle=ii)
     assert np.isclose(wp, wp_official.value)
 
@@ -35,10 +32,10 @@ def test_plasma_freq(n, ptcl):
 def test_SDP_calculation(B, n, w_wce):
 
     # Calculate using our functions
-    wce = cyclotron_frequency(B, "e-")
-    S, D, P = calculate_SDP(B, n, w_wce * wce)
+    wce = wcs(B, "e-")
+    S, D, P = SDP(B, n, w_wce * wce)
     # Calculate using plasmapy's function
-    S_official, D_official, P_official = SDP(
+    S_official, D_official, P_official = SDP_(
         B * u.nT,
         ["e-", "p"],
         [n / u.Unit("cm3"), n / u.Unit("cm3")],

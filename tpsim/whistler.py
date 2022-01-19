@@ -10,7 +10,7 @@ __all__ = [
 ]
 
 
-from .plasma_parameters import calculate_SDP
+from .plasma_parameters import SDP
 import astropy.units as u
 import numpy as np
 
