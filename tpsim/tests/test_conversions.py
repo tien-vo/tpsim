@@ -1,7 +1,7 @@
 from ..conversions import (
     KE2S, S2KE, ES2VS, VS2ES, ES2US, US2ES, gamma, normalize_E,
 )
-from ..plasma_functions import cyclotron_frequency
+from ..plasma_parameters import cyclotron_frequency
 from ..constants import c, m_e
 from plasmapy.formulary import Lorentz_factor
 from plasmapy.formulary import wc_

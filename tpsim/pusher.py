@@ -11,7 +11,7 @@ __all__ = [
 import numpy as np
 
 
-def advance(t, x, y, z, ux, uy, uz, model, dt, particle="p"):
+def advance(t, x, y, z, ux, uy, uz, model, dt, particle="e-"):
     r"""Advance the particles in time through a step size dt with the given
     electromagnetic field model using the Boris algorithm. See more details in
     Ripperda et al., 2018, or Section 3.1 in the thesis.

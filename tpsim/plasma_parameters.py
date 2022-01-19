@@ -23,7 +23,7 @@ def cyclotron_frequency(B, particle="e-"):
     B           : nT
         Background magnetic field
     particle    : str
-        "e-" for electron or "p" for ion
+        "e-" for electron or "i" for ion
 
     -------
     Returns
@@ -76,7 +76,7 @@ def calculate_SDP(B, n, w):
         Stix coefficients
     """
     S, D, P = 1, 0, 1
-    for ptcl in ["e-", "p"]:
+    for ptcl in ["e-", "i"]:
         wc = cyclotron_frequency(B, particle=ptcl)
         wp = plasma_frequency(n, particle=ptcl)
         S += - (wp ** 2) / (w ** 2 - wc ** 2)

@@ -12,18 +12,20 @@ import pytest
 
 
 @pytest.mark.parametrize("B", [1, 10, 500, 1000])
-@pytest.mark.parametrize("ptcl", ["p", "e-"])
+@pytest.mark.parametrize("ptcl", ["i", "e-"])
 def test_cyclotron_freq(B, ptcl):
+    ii = "p" if ptcl == "i" else "e-"
     wc = cyclotron_frequency(B, particle=ptcl)
-    wc_official = wc_(B * u.nT, particle=ptcl)
+    wc_official = wc_(B * u.nT, particle=ii)
     assert np.isclose(wc, wc_official.value)
 
 
 @pytest.mark.parametrize("n", [5, 50, 500])
-@pytest.mark.parametrize("ptcl", ["p", "e-"])
+@pytest.mark.parametrize("ptcl", ["i", "e-"])
 def test_plasma_freq(n, ptcl):
+    ii = "p" if ptcl == "i" else "e-"
     wp = plasma_frequency(n, particle=ptcl)
-    wp_official = wp_(n/u.Unit("cm3"), particle=ptcl)
+    wp_official = wp_(n/u.Unit("cm3"), particle=ii)
     assert np.isclose(wp, wp_official.value)
 
 
