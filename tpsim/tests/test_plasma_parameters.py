@@ -1,7 +1,7 @@
 from ..constants import m
-from ..plasma_parameters import (wps, wcs, SDP)
+from ..plasma_parameters import (wps, wcs, ds, SDP)
 from plasmapy.formulary.dielectric import cold_plasma_permittivity_SDP as SDP_
-from plasmapy.formulary import wc_, wp_
+from plasmapy.formulary import wc_, wp_, cwp_
 import astropy.units as u
 import numpy as np
 import pytest
@@ -24,6 +24,15 @@ def test_plasma_freq(n, s):
     wp = wps(n, s)
     wp_official = wp_(n/u.Unit("cm3"), particle=ii)
     assert np.isclose(wp, wp_official.value)
+
+
+@pytest.mark.parametrize("n", [5, 50, 500])
+@pytest.mark.parametrize("s", ["i", "e-"])
+def test_inertial_length(n, s):
+    ii = "p" if s == "i" else "e-"
+    d = ds(n, s)
+    d_official = cwp_(n/u.Unit("cm3"), particle=ii).to(u.km)
+    assert np.isclose(d, d_official.value)
 
 
 @pytest.mark.parametrize("B", [1, 10, 50])

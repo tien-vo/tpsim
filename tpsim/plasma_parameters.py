@@ -69,7 +69,7 @@ def ds(n, s="e-"):
     -------
     Returns
     -------
-    ds : rad/s
+    ds : km
         Inertial length
     """
     return c / wps(n, s)
